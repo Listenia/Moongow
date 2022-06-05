@@ -24,6 +24,10 @@ public class Moongow {
         client = MongoClients.create(uri);
     }
 
+    public static boolean isInitialized () {
+        return client != null;
+    }
+
     public Moongow (final String database) {
         if (client == null)
             throw new IllegalStateException("Moongow is not initialized");
