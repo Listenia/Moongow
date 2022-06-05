@@ -18,7 +18,7 @@ public class Moongow {
     private final String database;
     private final Datastore datastore;
 
-    public static void init (final String uri) {
+    public static void start (final String uri) {
         if (client != null)
             client.close();
         client = MongoClients.create(uri);
@@ -26,6 +26,11 @@ public class Moongow {
 
     public static boolean isInitialized () {
         return client != null;
+    }
+
+    public static void stop () {
+        if (client != null)
+            client.close();
     }
 
     public Moongow (final String database) {
