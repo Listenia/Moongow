@@ -1,20 +1,24 @@
 package fun.listenia.moogow;
 
+import dev.morphia.query.experimental.filters.Filter;
+import fun.listenia.moogow.finder.GeoNearCustomFilter;
 import org.bson.Document;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Consumer;
+
 public class Sort {
 
-    enum Type {
+    public enum Type {
         ASC_DESC,
         NEAR,
         TEXT
     }
 
-    protected Type type;
-    protected String field;
-    protected Object value;
+    public Type type;
+    public String field;
+    public Object value;
 
     @NotNull
     @Contract(value = "_ -> new", pure = true)
@@ -45,6 +49,13 @@ public class Sort {
         Document datas = new Document("type", "Point").append("coordinates", new double[]{x, y});
         ((Document) sort.value).put("$near", new Document("$geometry", datas));
         return sort;
+    }
+
+    @Deprecated
+    public static Filter NEAR (final String field, @NotNull Consumer<GeoNearCustomFilter> geo) {
+        GeoNearCustomFilter filter = new GeoNearCustomFilter(field);
+        geo.accept(filter);
+        return filter.buildFilter();
     }
 
     @NotNull

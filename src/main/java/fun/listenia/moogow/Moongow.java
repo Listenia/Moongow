@@ -5,6 +5,8 @@ import com.mongodb.client.MongoClients;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import dev.morphia.query.experimental.filters.Filter;
+import fun.listenia.moogow.finder.CustomFilter;
+import fun.listenia.moogow.finder.Finder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

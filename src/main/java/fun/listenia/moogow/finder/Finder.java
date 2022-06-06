@@ -1,4 +1,4 @@
-package fun.listenia.moogow;
+package fun.listenia.moogow.finder;
 
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
@@ -7,13 +7,14 @@ import dev.morphia.query.MorphiaCursor;
 import dev.morphia.query.Query;
 import dev.morphia.query.experimental.filters.Filter;
 import dev.morphia.query.experimental.filters.Filters;
+import fun.listenia.moogow.Moongow;
+import fun.listenia.moogow.Sort;
 import org.bson.Document;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Finder<T> {
 
@@ -39,6 +40,11 @@ public class Finder<T> {
 
     public Finder<T> sort (Sort... sorts) {
         this.sorts.addAll(Arrays.asList(sorts));
+        return this;
+    }
+
+    public Finder<T> sort (Filter... sorts) {
+        this.filters.addAll(Arrays.asList(sorts));
         return this;
     }
 

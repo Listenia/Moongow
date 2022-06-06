@@ -1,4 +1,4 @@
-package fun.listenia.moogow;
+package fun.listenia.moogow.finder;
 
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
