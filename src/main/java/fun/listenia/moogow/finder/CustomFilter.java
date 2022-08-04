@@ -112,6 +112,21 @@ public class CustomFilter {
         return this;
     }
 
+    public CustomFilter startsWith (String field, String value) {
+        filters.add(Filters.regex(field).pattern("^" + value));
+        return this;
+    }
+
+    public CustomFilter endsWith (String field, String value) {
+        filters.add(Filters.regex(field).pattern(value + "$"));
+        return this;
+    }
+
+    public CustomFilter containsText (String field, String value) {
+        filters.add(Filters.regex(field).pattern(".*" + value + ".*"));
+        return this;
+    }
+
     public CustomFilter geo (@NotNull Consumer<GeoCustomFilter> geo) {
         GeoCustomFilter geoCustomFilter = new GeoCustomFilter();
         geo.accept(geoCustomFilter);

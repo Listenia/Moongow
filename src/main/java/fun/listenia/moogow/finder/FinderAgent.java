@@ -2,8 +2,8 @@ package fun.listenia.moogow.finder;
 
 import com.mongodb.client.model.geojson.Point;
 import com.mongodb.client.model.geojson.Position;
+import dev.morphia.DeleteOptions;
 import dev.morphia.query.FindOptions;
-import dev.morphia.query.MorphiaCursor;
 import dev.morphia.query.Query;
 import dev.morphia.query.experimental.filters.Filter;
 import dev.morphia.query.experimental.filters.Filters;
@@ -15,8 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Finder<T> {
+public class FinderAgent<T> {
 
     private final Moongow moongow;
     private final Class<T> clazz;
@@ -26,34 +27,34 @@ public class Finder<T> {
     private int limit = -1;
     private int skip = -1;
 
-    public Finder (Moongow moongow, final Class<T> clazz) {
+    public FinderAgent (Moongow moongow, final Class<T> clazz) {
         this.moongow = moongow;
         this.clazz = clazz;
-        this.filters = new ArrayList<Filter>();
-        this.sorts = new ArrayList<Sort>();
+        this.filters = new ArrayList<>();
+        this.sorts = new ArrayList<>();
     }
 
-    public Finder<T> filter (Filter... filters) {
+    public FinderAgent<T> filter (Filter... filters) {
         this.filters.addAll(Arrays.asList(filters));
         return this;
     }
 
-    public Finder<T> sort (Sort... sorts) {
+    public FinderAgent<T> sort (Sort... sorts) {
         this.sorts.addAll(Arrays.asList(sorts));
         return this;
     }
 
-    public Finder<T> sort (Filter... sorts) {
+    public FinderAgent<T> sort (Filter... sorts) {
         this.filters.addAll(Arrays.asList(sorts));
         return this;
     }
 
-    public Finder<T> limit (int limit) {
+    public FinderAgent<T> limit (int limit) {
         this.limit = limit;
         return this;
     }
 
-    public Finder<T> skip (int skip) {
+    public FinderAgent<T> skip (int skip) {
         this.skip = skip;
         return this;
     }
@@ -84,16 +85,33 @@ public class Finder<T> {
 
     public T findOne () {
         FindOptions options = new FindOptions();
-        options.limit(1);
+     //   options.limit(1);
         Query<T> query = query(options);
         return query.first(options);
     }
 
-    public List<T> find () {
+    public List<T> findMany() {
         FindOptions options = new FindOptions();
         Query<T> query = query(options);
-        MorphiaCursor<T> cursor = query.iterator(options);
-        return cursor.toList();
+        return query.stream().collect(Collectors.toList());
+    }
+
+    public long count () {
+        FindOptions options = new FindOptions();
+        Query<T> query = query(options);
+        return query.count();
+    }
+
+    public void deleteOne () {
+        FindOptions options = new FindOptions();
+        Query<T> query = query(options);
+        query.delete(new DeleteOptions().multi(false));
+    }
+
+    public void deleteMany () {
+        FindOptions options = new FindOptions();
+        Query<T> query = query(options);
+        query.delete(new DeleteOptions().multi(true));
     }
 
 

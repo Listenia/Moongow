@@ -1,9 +1,7 @@
 import fun.listenia.moogow.Moongow;
 import fun.listenia.moogow.Sort;
 import test.bidule.Adress;
-import test.bidule.Resident;
 
-import static dev.morphia.query.experimental.filters.Filters.eq;
 
 public class Test {
 

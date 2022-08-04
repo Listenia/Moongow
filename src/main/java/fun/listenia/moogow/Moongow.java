@@ -2,14 +2,21 @@ package fun.listenia.moogow;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.result.UpdateResult;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
+import dev.morphia.UpdateOptions;
 import dev.morphia.query.experimental.filters.Filter;
 import fun.listenia.moogow.finder.CustomFilter;
-import fun.listenia.moogow.finder.Finder;
+import fun.listenia.moogow.finder.FinderAgent;
+import fun.listenia.moogow.updater.CustomUpdate;
+import fun.listenia.moogow.updater.UpdaterAgent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 
@@ -74,6 +81,10 @@ public class Moongow {
         this.datastore.save(objects);
     }
 
+    public void save (@NotNull final Object... objects) {
+        this.datastore.save(Arrays.asList(objects));
+    }
+
     public void delete (Object object) {
         this.datastore.delete(object);
     }
@@ -82,19 +93,41 @@ public class Moongow {
         this.datastore.delete(objects);
     }
 
-    public <T> Finder<T> finder (final Class<T> type) {
-        return new Finder<>(this, type);
+    public void delete (@NotNull final Object... objects) {
+        this.datastore.delete(Arrays.asList(objects));
     }
 
-    public <T> Finder<T> finder (final Class<T> type, @NotNull Consumer<CustomFilter> query) {
+    public <T> FinderAgent<T> finder (final Class<T> type) {
+        return new FinderAgent<>(this, type);
+    }
+
+    public <T> FinderAgent<T> finder (final Class<T> type, @NotNull Consumer<CustomFilter> query) {
         CustomFilter filters = new CustomFilter();
         query.accept(filters);
 
-        Finder<T> newFinder = new Finder<>(this, type);
-        newFinder.filter(filters.getFilters().toArray(new Filter[0]));
-        return newFinder;
+        FinderAgent<T> newFinderAgent = new FinderAgent<>(this, type);
+        newFinderAgent.filter(filters.getFilters().toArray(new Filter[0]));
+        return newFinderAgent;
     }
 
+    private <T> UpdateResult update0 (Class<T> clazz, @NotNull BiConsumer<CustomFilter, CustomUpdate> consumer, UpdateOptions options) {
+        CustomFilter filters = new CustomFilter();
+        CustomUpdate customUpdates = new CustomUpdate();
+        consumer.accept(filters, customUpdates);
+
+        UpdaterAgent<T> updaterAgent = new UpdaterAgent<>(this, clazz);
+        updaterAgent.setFilter(filters);
+        updaterAgent.setUpdate(customUpdates);
+        return updaterAgent.update(options);
+    }
+
+    public <T> UpdateResult updateOne (Class<T> clazz, @NotNull BiConsumer<CustomFilter, CustomUpdate> consumer) {
+        return update0(clazz, consumer, new UpdateOptions().multi(false));
+    }
+
+    public <T> UpdateResult updateMany (Class<T> clazz, @NotNull BiConsumer<CustomFilter, CustomUpdate> consumer) {
+        return update0(clazz, consumer, new UpdateOptions().multi(true));
+    }
 
 
 }
