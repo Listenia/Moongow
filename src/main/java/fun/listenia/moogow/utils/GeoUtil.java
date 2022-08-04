@@ -32,15 +32,4 @@ public class GeoUtil {
         return new Polygon(positions);
     }
 
-    public static boolean isInside (@NotNull Polygon polygon, @NotNull Position position) {
-        return polygon.getCoordinates().getExterior().contains(position);
-    }
-
-    public static boolean isInside (@NotNull Polygon polygon, @NotNull Polygon polygon2) {
-        for (Position position : polygon2.getCoordinates().getExterior())
-            if (!polygon.getCoordinates().getExterior().contains(position))
-                return false;
-        return true;
-    }
-
 }
