@@ -1,6 +1,5 @@
 import fun.listenia.moogow.Moongow;
-import fun.listenia.moogow.Sort;
-import test.bidule.Adress;
+import test.bidule.PlayerGame;
 
 
 public class Test {
@@ -14,13 +13,22 @@ public class Test {
         moongow.mapping("test.bidule");
 
 
-        moongow.finder(Adress.class, (filter) -> {
-           filter.eq("number", 10);
-        }).sort(Sort.NEAR("location", (geo) -> {
-            geo.setX(10);
-            geo.setY(10);
-            geo.setMaxDistance(10);
-        })).findOne();
+        moongow.finder(PlayerGame.class, (filter) -> {
+            filter.eq("rank", "test");
+        }).findMany();
+
+
+        moongow.finder(PlayerGame.class, (filter, sort) -> {
+            filter.eq("rank", "test");
+
+            filter.lt("rank", 50);
+            filter.lte("rank", 50);
+
+            sort.asc("balance");
+        }).findMany();
+
+
+
 
 
         /*

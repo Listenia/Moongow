@@ -8,6 +8,7 @@ import dev.morphia.Morphia;
 import dev.morphia.UpdateOptions;
 import dev.morphia.query.experimental.filters.Filter;
 import fun.listenia.moogow.finder.CustomFilter;
+import fun.listenia.moogow.finder.CustomSort;
 import fun.listenia.moogow.finder.FinderAgent;
 import fun.listenia.moogow.updater.CustomUpdate;
 import fun.listenia.moogow.updater.UpdaterAgent;
@@ -102,11 +103,14 @@ public class Moongow {
     }
 
     public <T> FinderAgent<T> finder (final Class<T> type, @NotNull Consumer<CustomFilter> query) {
-        CustomFilter filters = new CustomFilter();
-        query.accept(filters);
-
         FinderAgent<T> newFinderAgent = new FinderAgent<>(this, type);
-        newFinderAgent.filter(filters.getFilters().toArray(new Filter[0]));
+        query.accept(newFinderAgent.getFilters());
+        return newFinderAgent;
+    }
+
+    public <T> FinderAgent<T> finder (final Class<T> type, @NotNull BiConsumer<CustomFilter, CustomSort> query) {
+        FinderAgent<T> newFinderAgent = new FinderAgent<>(this, type);
+        query.accept(newFinderAgent.getFilters(), newFinderAgent.getSorts());
         return newFinderAgent;
     }
 

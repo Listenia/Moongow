@@ -5,11 +5,9 @@ import com.mongodb.client.model.geojson.Position;
 import dev.morphia.query.Type;
 import dev.morphia.query.experimental.filters.Filter;
 import dev.morphia.query.experimental.filters.Filters;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class CustomFilter {
 
@@ -47,11 +45,6 @@ public class CustomFilter {
 
     public CustomFilter near (String field, int value) {
         filters.add(Filters.size(field, value));
-        return this;
-    }
-
-    public CustomFilter where (String field) {
-        filters.add(Filters.where(field));
         return this;
     }
 
@@ -124,13 +117,6 @@ public class CustomFilter {
 
     public CustomFilter containsText (String field, String value) {
         filters.add(Filters.regex(field).pattern(".*" + value + ".*"));
-        return this;
-    }
-
-    public CustomFilter geo (@NotNull Consumer<GeoCustomFilter> geo) {
-        GeoCustomFilter geoCustomFilter = new GeoCustomFilter();
-        geo.accept(geoCustomFilter);
-        filters.addAll(geoCustomFilter.getFilters());
         return this;
     }
 
