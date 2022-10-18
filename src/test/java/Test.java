@@ -28,6 +28,12 @@ public class Test {
         }).findMany();
 
 
+        moongow.updateMany(PlayerGame.class, (filter, update) -> {
+            filter.eq("rank", "test");
+            update.set("rank", "test2");
+        });
+
+
 
 
 

@@ -6,7 +6,6 @@ import com.mongodb.client.result.UpdateResult;
 import dev.morphia.Datastore;
 import dev.morphia.Morphia;
 import dev.morphia.UpdateOptions;
-import dev.morphia.query.experimental.filters.Filter;
 import fun.listenia.moogow.finder.CustomFilter;
 import fun.listenia.moogow.finder.CustomSort;
 import fun.listenia.moogow.finder.FinderAgent;
@@ -14,7 +13,6 @@ import fun.listenia.moogow.updater.CustomUpdate;
 import fun.listenia.moogow.updater.UpdaterAgent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -114,23 +112,18 @@ public class Moongow {
         return newFinderAgent;
     }
 
-    private <T> UpdateResult update0 (Class<T> clazz, @NotNull BiConsumer<CustomFilter, CustomUpdate> consumer, UpdateOptions options) {
-        CustomFilter filters = new CustomFilter();
-        CustomUpdate customUpdates = new CustomUpdate();
-        consumer.accept(filters, customUpdates);
-
+    private <T> UpdateResult update0 (Class<T> clazz, @NotNull BiConsumer<CustomFilter, CustomUpdate> consumer, boolean multi) {
         UpdaterAgent<T> updaterAgent = new UpdaterAgent<>(this, clazz);
-        updaterAgent.setFilter(filters);
-        updaterAgent.setUpdate(customUpdates);
-        return updaterAgent.update(options);
+        consumer.accept(updaterAgent.getFilters(), updaterAgent.getUpdates());
+        return updaterAgent.update(new UpdateOptions().multi(multi));
     }
 
     public <T> UpdateResult updateOne (Class<T> clazz, @NotNull BiConsumer<CustomFilter, CustomUpdate> consumer) {
-        return update0(clazz, consumer, new UpdateOptions().multi(false));
+        return update0(clazz, consumer, false);
     }
 
     public <T> UpdateResult updateMany (Class<T> clazz, @NotNull BiConsumer<CustomFilter, CustomUpdate> consumer) {
-        return update0(clazz, consumer, new UpdateOptions().multi(true));
+        return update0(clazz, consumer,true);
     }
 
 

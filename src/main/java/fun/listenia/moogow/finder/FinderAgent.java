@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FinderAgent<T> {
 
@@ -33,6 +34,9 @@ public class FinderAgent<T> {
         Query<T> query = moongow.getDatastore().find(clazz);
         for (Filter filter : this.filters.getFilters())
             query.filter(filter);
+
+        if (options == null)
+            return query;
 
         if (this.sorts.getLimit() > 0) options.limit(this.sorts.getLimit());
         if (this.sorts.getSkip() > 0) options.skip(this.sorts.getSkip());
@@ -55,9 +59,8 @@ public class FinderAgent<T> {
 
     public T findOne () {
         FindOptions options = new FindOptions();
-     //   options.limit(1);
         Query<T> query = query(options);
-        return query.first(options);
+        return query.first();
     }
 
     public List<T> findMany() {
@@ -66,22 +69,26 @@ public class FinderAgent<T> {
         return query.stream().collect(Collectors.toList());
     }
 
+    public Stream<T> findStream () {
+        FindOptions options = new FindOptions();
+        Query<T> query = query(options);
+        return query.stream();
+    }
+
     public long count () {
         FindOptions options = new FindOptions();
         Query<T> query = query(options);
         return query.count();
     }
 
-    public void deleteOne () {
-        FindOptions options = new FindOptions();
-        Query<T> query = query(options);
-        query.delete(new DeleteOptions().multi(false));
+    public int deleteOne () {
+        Query<T> query = query(null);
+        return (int) query.delete(new DeleteOptions().multi(false)).getDeletedCount();
     }
 
-    public void deleteMany () {
-        FindOptions options = new FindOptions();
-        Query<T> query = query(options);
-        query.delete(new DeleteOptions().multi(true));
+    public long deleteMany () {
+        Query<T> query = query(null);
+        return query.delete(new DeleteOptions().multi(true)).getDeletedCount();
     }
 
     public CustomFilter getFilters () {

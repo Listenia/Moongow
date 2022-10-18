@@ -4,42 +4,38 @@ import com.mongodb.client.result.UpdateResult;
 import dev.morphia.UpdateOptions;
 import dev.morphia.query.Query;
 import dev.morphia.query.experimental.filters.Filter;
-import dev.morphia.query.experimental.updates.UpdateOperator;
 import fun.listenia.moogow.Moongow;
 import fun.listenia.moogow.finder.CustomFilter;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class UpdaterAgent <T> {
 
     private final Moongow moongow;
     private final Class<T> clazz;
-
-    private List<Filter> filters = new ArrayList<>();
-    private List<UpdateOperator> customUpdates = new ArrayList<>();
+    private final CustomFilter filters;
+    private final CustomUpdate updates;
 
     public UpdaterAgent (Moongow moongow, Class<T> clazz) {
         this.moongow = moongow;
         this.clazz = clazz;
+
+        this.filters = new CustomFilter();
+        this.updates = new CustomUpdate();
     }
 
-    public UpdaterAgent<T> setFilter (@NotNull CustomFilter filters) {
-        this.filters = filters.getFilters();
-        return this;
+    public CustomFilter getFilters () {
+        return filters;
     }
 
-    public UpdaterAgent<T> setUpdate (@NotNull CustomUpdate customUpdates) {
-        this.customUpdates = customUpdates.getUpdates();
-        return this;
+    public CustomUpdate getUpdates () {
+        return updates;
     }
+
 
     public UpdateResult update (UpdateOptions options) {
         Query<T> query = moongow.getDatastore().find(clazz);
-        for (Filter filter : filters)
+        for (Filter filter : filters.getFilters())
             query.filter(filter);
-        return query.update(customUpdates).execute(options);
+        return query.update(updates.getUpdates()).execute(options);
     }
 
 
