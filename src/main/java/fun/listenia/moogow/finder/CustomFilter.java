@@ -8,6 +8,7 @@ import dev.morphia.query.experimental.filters.Filters;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CustomFilter {
 
@@ -122,6 +123,20 @@ public class CustomFilter {
 
     public CustomFilter addFilter (Filter filter) {
         filters.add(filter);
+        return this;
+    }
+
+    public CustomFilter and (Consumer<List<Filter>> consumer) {
+        final List<Filter> list = new ArrayList<>();
+        consumer.accept(list);
+        this.filters.add(Filters.and(list.toArray(new Filter[0])));
+        return this;
+    }
+
+    public CustomFilter or (Consumer<List<Filter>> consumer) {
+        final List<Filter> list = new ArrayList<>();
+        consumer.accept(list);
+        this.filters.add(Filters.or(list.toArray(new Filter[0])));
         return this;
     }
 

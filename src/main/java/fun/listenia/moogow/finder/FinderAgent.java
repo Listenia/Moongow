@@ -81,6 +81,12 @@ public class FinderAgent<T> {
         return query.count();
     }
 
+    public boolean exists () {
+        FindOptions options = new FindOptions();
+        Query<T> query = query(options);
+        return query.count() > 0;
+    }
+
     public int deleteOne () {
         Query<T> query = query(null);
         return (int) query.delete(new DeleteOptions().multi(false)).getDeletedCount();
