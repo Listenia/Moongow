@@ -126,17 +126,17 @@ public class CustomFilter {
         return this;
     }
 
-    public CustomFilter and (Consumer<List<Filter>> consumer) {
-        final List<Filter> list = new ArrayList<>();
-        consumer.accept(list);
-        this.filters.add(Filters.and(list.toArray(new Filter[0])));
+    public CustomFilter and (Consumer<CustomFilter> consumer) {
+        final CustomFilter and = new CustomFilter();
+        consumer.accept(and);
+        filters.add(Filters.and(and.getFilters().toArray(new Filter[0])));
         return this;
     }
 
-    public CustomFilter or (Consumer<List<Filter>> consumer) {
-        final List<Filter> list = new ArrayList<>();
-        consumer.accept(list);
-        this.filters.add(Filters.or(list.toArray(new Filter[0])));
+    public CustomFilter or (Consumer<CustomFilter> consumer) {
+        final CustomFilter or = new CustomFilter();
+        consumer.accept(or);
+        filters.add(Filters.or(or.getFilters().toArray(new Filter[0])));
         return this;
     }
 
