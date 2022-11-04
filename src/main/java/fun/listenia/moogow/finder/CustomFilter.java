@@ -44,8 +44,13 @@ public class CustomFilter {
         return this;
     }
 
-    public CustomFilter near (String field, int value) {
-        filters.add(Filters.size(field, value));
+    public CustomFilter maxNear (String field, double value) {
+        filters.add(Filters.maxDistance(field, value));
+        return this;
+    }
+
+    public CustomFilter minNear (String field, double value) {
+        filters.add(Filters.minDistance(field, value));
         return this;
     }
 
