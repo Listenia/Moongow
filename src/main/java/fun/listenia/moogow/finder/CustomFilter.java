@@ -5,6 +5,7 @@ import com.mongodb.client.model.geojson.Position;
 import dev.morphia.query.Type;
 import dev.morphia.query.experimental.filters.Filter;
 import dev.morphia.query.experimental.filters.Filters;
+import dev.morphia.query.experimental.filters.NearFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,23 +30,15 @@ public class CustomFilter {
         return this;
     }
 
-    public CustomFilter near (String field, Point value) {
-        filters.add(Filters.near(field, value));
-        return this;
-    }
-
-    public CustomFilter near (String field, Position value) {
-        filters.add(Filters.near(field, new Point(value)));
-        return this;
-    }
-
     public CustomFilter near (String field, double x, double y) {
         filters.add(Filters.near(field, new Point(new Position(x, y))));
         return this;
     }
 
-    public CustomFilter maxNear (String field, double value) {
-        filters.add(Filters.maxDistance(field, value));
+    public CustomFilter near (String field, double x, double y, Consumer<NearFilter> consumer) {
+        NearFilter nearFilter = Filters.near(field, new Point(new Position(x, y)));
+        consumer.accept(nearFilter);
+        filters.add(nearFilter);
         return this;
     }
 
